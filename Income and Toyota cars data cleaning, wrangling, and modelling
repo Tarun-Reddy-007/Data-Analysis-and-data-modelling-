@@ -1,0 +1,151 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_absolute_error
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestRegressor
+df1=pd.read_csv("C:/Users/tarun/Desktop/Data Sets/income.csv",na_values=["?"])
+df=pd.read_csv("C:/Users/tarun/Desktop/Data Sets/Toyota.csv",index_col=0,na_values=["??","????"])
+df.isnull().sum()
+df1.isnull().sum()
+df["Age"].mean()
+df["Age"].fillna(df["Age"].mean(),inplace=True)
+df["KM"].fillna(df["KM"].mean(),inplace=True)
+df["HP"].fillna(df["HP"].mean(),inplace=True)
+df["FuelType"].fillna(df["FuelType"].value_counts().idxmax(),inplace=True)
+df["MetColor"].fillna(df["MetColor"].value_counts().idxmax(),inplace=True)
+df.isnull().sum()
+df.dtypes
+df["Doors"].unique()
+df["Doors"].replace('three','3',inplace=True)
+df["Doors"].replace('four','4',inplace=True)
+df["Doors"].replace('five','5',inplace=True)
+df["Doors"]=df["Doors"].astype(int)
+df.head()
+x=df[["Age","KM","FuelType","HP","MetColor","Automatic","CC","Doors","Weight"]]
+y=df[["Price"]]
+x_train,x_test,y_train,y_test=train_test_split(x,y,random_state=0,test_size=0.3)
+print(x_train.size,x_test.size,y_train.size,y_test.size)
+df1.head()
+df1["SalStat"].unique()
+df1["SalStat"].value_counts()
+dfc=pd.get_dummies(df1,columns=["SalStat"])
+df1.head()
+dfc.head()
+from sklearn.ensemble import RandomForestClassifier
+dfc.dtypes
+dfc["JobType"].value_counts()
+df1["JobType"].value_counts()
+df1["JobType"].replace("?",df1["JobType"].value_counts().idxmax(),inplace=True)
+df1["gender"].value_counts()
+dfc=pd.get_dummies(dfc,columns=["gender"])
+dfc.head()
+dfc.rename(columns={"gender_ Female":"Female","gender_ Male":"Male"},inplace=True)
+dfc.head()
+dfc["race"].value_counts()
+dfc=pd.get_dummies(dfc,columns=["race"])
+dfc.head()
+dfc.rename(columns={"race_ Amer-Indian-Eskimo":"Amer-Indian-Eskimo","race_ Asian-Pac-Islander":"Asian-Pac-Islander","race_ Black":"Black","race_ Other":"Other","race_ White":"White"},inplace=True)
+dfc.head()
+dfc["relationship"].value_counts()
+dfc=pd.get_dummies(dfc,columns=["relationship"])
+dfc.rename(columns={"relationship_ Husband":"Husband","relationship_ Not-in-family":"Not-in-Family","relationship_ Other-relative":"Other-relative","relationship_ Own-child":"Own_Child","relationship_ Unmarried":"Unmarried","relationship_ Wife":"Wife"},inplace=True)
+pd.set_option("display.max_columns",100)
+dfc.head()
+RFS=RandomForestClassifier(random_state=0)
+x=dfc[["Female","Male","Amer-Indian-Eskimo","Asian-Pac-Islander","Black","Other","White","Husband","Not-in-Family","Other-relative","Own_Child","Unmarried","Wife"]]
+dfc.rename(columns={"SalStat_ greater than 50,000":">50000","SalStat_ less than or equal to 50,000":"<50000"},inplace=True)
+y=[[">50000","50000"]]
+df.isnull().sum()
+df["Doors"].value_counts()
+df11=pd.get_dummies(df,columns=["FuelType"])
+df11.head()
+df11.rename(columns={"FuelType_CNG":"CNG","FuelType_Diesel":"Diesel","FuelType_Petrol":"Petrol"},inplace=True)
+df11.head()
+features=["Age","KM","HP","MetColor","Automatic","CC","Doors","Weight","CNG","Diesel","Petrol"]
+X=df11[features]
+y=df11["Price"]
+DTR=DecisionTreeRegressor(random_state=1)
+DTR.fit(X,y)
+DTR.predict(X.head())
+predicted=DTR.predict(X)
+mean_absolute_error(y,predicted)
+x_train,x_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=1)
+DTR1=DecisionTreeRegressor()
+DTR1.fit(x_train,y_train)
+prediction=DTR1.predict(x_test)
+mean_absolute_error(y_test,prediction)
+def perfect(max_leaf_nodes,x_train,x_test,y_train,y_test):
+    DTR2=DecisionTreeRegressor(max_leaf_nodes=max_leaf_nodes,random_state=0)
+    DTR2.fit(x_train,y_train)
+    pred_val=DTR2.predict(x_test)
+    mae=mean_absolute_error(y_test,pred_val)
+    return(mae)
+X=df11[features]
+y=df11["Price"]
+train_x,test_x,train_y,test_y=train_test_split(X,y,test_size=0.2,random_state=1)
+list=[]
+for max_leaf_nodes in range(5,10001):
+    Salist.append(perfect(max_leaf_nodes,x_train,x_test,y_train,y_test))
+list.index(min(list))
+list
+np.min(list)
+df1.head()
+df1["SalStat"].value_counts()
+df1.rename(columns={"SalStat < 50000":"SalStat"},inplace=True)
+df1.head()
+df1["SalStat"].value_counts()
+df22=pd.get_dummies(df1,columns=["SalStat"],drop_first=True)
+df22.rename(columns={"SalStat_ less than or equal to 50,000":"SalStat<=50000"},inplace=True)
+df22=pd.get_dummies(df22,columns=["gender"],drop_first=True)
+df22.rename(columns={"gender_ Male":"Male"},inplace=True)
+features1=["age","Male","capitalgain","capitalloss","hoursperweek"]
+xx=df22[features1]
+yy=df22["SalStat<=50000"]
+logreg=LogisticRegression()
+df22.head()
+logreg.fit(xx,yy)
+logreg.coef_
+logreg.intercept_
+y_pred=logreg.predict(xx)
+y_pred
+correct=yy==y_pred
+correct.value_counts()
+logreg.score(xx,yy)
+x_train,x_test,y_train,y_test=train_test_split(xx,yy,random_state=1,test_size=0.3)
+logreg.fit(x_train,y_train)
+yy_pred=logreg.predict(x_test)
+cor=yy_pred==y_test
+cor.value_counts()
+mean_absolute_error(yy,y_pred)
+mean_absolute_error(y_test,yy_pred)
+logreg.predict(([[40,0,0,0,40]]))
+RFR=RandomForestRegressor(random_state=0)
+RFR.fit(train_x,train_y)
+predi=RFR.predict(test_x)
+mean_absolute_error(predi,test_y)
+rfrmodel1=RandomForestRegressor(random_state=0,n_estimators=50)
+rfrmodel2=RandomForestRegressor(random_state=0,n_estimators=100)
+rfrmodel3=RandomForestRegressor(random_state=0,n_estimators=100,criterion="mae")
+rfrmodel4=RandomForestRegressor(random_state=0,n_estimators=200,min_samples_split=20)
+rfrmodel5=RandomForestRegressor(random_state=0,max_depth=7,n_estimators=100)
+rfrmodels=[rfrmodel1,rfrmodel2,rfrmodel3,rfrmodel4,rfrmodel5,]
+x=df11[features]
+y=df11["Price"]
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.3,random_state=0)
+def rfrbestmodel(model, x_t=x_train, x_v=x_test, y_t=y_train, y_v=y_test):
+    model.fit(x_t,y_t)
+    preds=model.predict(x_v)
+    return mean_absolute_error(preds,y_test)
+for i in range(0,len(rfrmodels)):
+    mae=rfrbestmodel(rfrmodels[i])
+    print("rfrmodel %d MAE : %d" % (i+1,mae))
+
+
+
+
+
+
+
