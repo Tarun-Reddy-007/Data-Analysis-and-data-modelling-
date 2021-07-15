@@ -1,0 +1,99 @@
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error,mean_squared_error
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.ensemble import RandomForestRegressor
+from math import sqrt
+dftrain=pd.read_csv("C:/Users/tarun/Desktop/Data Sets/house pricing dataset/train.csv")
+dftest=pd.read_csv("C:/Users/tarun/Desktop/Data Sets/house pricing dataset/test.csv")
+dfsamp=pd.read_csv("C:/Users/tarun/Desktop/Data Sets/house pricing dataset/sample_submission.csv")
+dftrain.drop("Alley",axis=1,inplace=True)
+dftrain.drop("FireplaceQu",axis=1,inplace=True)
+dftrain.drop("PoolQC",axis=1,inplace=True)
+dftrain.drop("Fence",axis=1,inplace=True)
+dftrain.drop("MiscFeature",axis=1,inplace=True)
+dftrain["LotFrontage"].fillna(np.mean(dftrain["LotFrontage"]),inplace=True)
+dftrain["MasVnrType"].fillna(dftrain["MasVnrType"].value_counts().idxmax(),inplace=True)
+dftrain["MasVnrArea"].fillna(np.mean(dftrain["MasVnrArea"]),inplace=True)
+dftrain["BsmtQual"].fillna(dftrain["BsmtQual"].value_counts().idxmax(),inplace=True)
+dftrain["BsmtCond"].fillna(dftrain["BsmtCond"].value_counts().idxmax(),inplace=True)
+dftrain["BsmtExposure"].fillna(dftrain["BsmtExposure"].value_counts().idxmax(),inplace=True)
+dftrain["BsmtFinType1"].fillna(dftrain["BsmtFinType1"].value_counts().idxmax(),inplace=True)
+dftrain["BsmtFinType2"].fillna(dftrain["BsmtFinType2"].value_counts().idxmax(),inplace=True)
+dftrain["Electrical"].fillna(dftrain["Electrical"].value_counts().idxmax(),inplace=True)
+dftrain["GarageType"].fillna(dftrain["GarageType"].value_counts().idxmax(),inplace=True)
+dftrain["GarageYrBlt"].fillna(dftrain["GarageYrBlt"].value_counts().idxmax(),inplace=True)
+dftrain["GarageFinish"].fillna(dftrain["GarageFinish"].value_counts().idxmax(),inplace=True)
+dftrain["GarageQual"].fillna(dftrain["GarageQual"].value_counts().idxmax(),inplace=True)
+dftrain["GarageCond"].fillna(dftrain["GarageCond"].value_counts().idxmax(),inplace=True)
+dftr=dftrain.copy()
+dftr.drop("SalePrice",axis=1,inplace=True)
+dftr.drop("Id",axis=1,inplace=True)
+y=dftrain["SalePrice"]
+y1=y.values
+sampr=dfsamp["SalePrice"]
+samp1=sampr.values
+dftest=pd.read_csv("C:/Users/tarun/Desktop/Data Sets/house pricing dataset/test.csv")
+dftest.drop("Alley",axis=1,inplace=True)
+dftest.drop("FireplaceQu",axis=1,inplace=True)
+dftest.drop("PoolQC",axis=1,inplace=True)
+dftest.drop("Fence",axis=1,inplace=True)
+dftest.drop("MiscFeature",axis=1,inplace=True)
+dftest["LotFrontage"].fillna(np.mean(dftest["LotFrontage"]),inplace=True)
+dftest["MasVnrType"].fillna(dftest["MasVnrType"].value_counts().idxmax(),inplace=True)
+dftest["MasVnrArea"].fillna(np.mean(dftest["MasVnrArea"]),inplace=True)
+dftest["BsmtQual"].fillna(dftest["BsmtQual"].value_counts().idxmax(),inplace=True)
+dftest["BsmtCond"].fillna(dftest["BsmtCond"].value_counts().idxmax(),inplace=True)
+dftest["BsmtExposure"].fillna(dftest["BsmtExposure"].value_counts().idxmax(),inplace=True)
+dftest["BsmtFinType1"].fillna(dftest["BsmtFinType1"].value_counts().idxmax(),inplace=True)
+dftest["BsmtFinType2"].fillna(dftest["BsmtFinType2"].value_counts().idxmax(),inplace=True)
+dftest["Electrical"].fillna(dftest["Electrical"].value_counts().idxmax(),inplace=True)
+dftest["GarageType"].fillna(dftest["GarageType"].value_counts().idxmax(),inplace=True)
+dftest["GarageYrBlt"].fillna(dftest["GarageYrBlt"].value_counts().idxmax(),inplace=True)
+dftest["GarageFinish"].fillna(dftest["GarageFinish"].value_counts().idxmax(),inplace=True)
+dftest["GarageQual"].fillna(dftest["GarageQual"].value_counts().idxmax(),inplace=True)
+dftest["GarageCond"].fillna(dftest["GarageCond"].value_counts().idxmax(),inplace=True)
+dftest["MSZoning"].fillna(dftest["MSZoning"].value_counts().idxmax(),inplace=True)
+dftest["Utilities"].fillna(dftest["Utilities"].value_counts().idxmax(),inplace=True)
+dftest["Exterior1st"].fillna(dftest["Exterior1st"].value_counts().idxmax(),inplace=True)
+dftest["Exterior2nd"].fillna(dftest["Exterior2nd"].value_counts().idxmax(),inplace=True)
+dftest["BsmtFinSF1"].fillna(np.mean(dftest["BsmtFinSF1"]),inplace=True)
+dftest["BsmtFinSF2"].fillna(np.mean(dftest["BsmtFinSF2"]),inplace=True)
+dftest["BsmtUnfSF"].fillna(np.mean(dftest["BsmtUnfSF"]),inplace=True)
+dftest["TotalBsmtSF"].fillna(np.mean(dftest["TotalBsmtSF"]),inplace=True)
+dftest["BsmtFullBath"].fillna(dftest["BsmtFullBath"].value_counts().idxmax(),inplace=True)
+dftest["BsmtHalfBath"].fillna(dftest["BsmtHalfBath"].value_counts().idxmax(),inplace=True)
+dftest["KitchenQual"].fillna(dftest["KitchenQual"].value_counts().idxmax(),inplace=True)
+dftest["Functional"].fillna(dftest["Functional"].value_counts().idxmax(),inplace=True)
+dftest["GarageCars"].fillna(dftest["GarageCars"].value_counts().idxmax(),inplace=True)
+dftest["GarageArea"].fillna(np.mean(dftest["GarageArea"]),inplace=True)
+dftest["SaleType"].fillna(dftest["SaleType"].value_counts().idxmax(),inplace=True)
+for i in dftr.columns:
+    if dftr[i].dtype=="object":
+        dftr=pd.get_dummies(dftr,columns=[i])
+for i in dftest.columns:
+    if dftest[i].dtype=="object":
+        dftest=pd.get_dummies(dftest,columns=[i])
+col=dftr.columns.difference(dftest.columns)
+for i in col:
+    dftr.drop(i,axis=1,inplace=True)
+dftest1=dftest.drop("Id",axis=1)
+linreg=LinearRegression()
+linreg.fit(dftr,y1)
+predl=linreg.predict(dftest1)
+sqrt(mean_squared_error(samp1,predl))
+dtr=DecisionTreeRegressor()
+dtr.fit(dftr,y1)
+predd=dtr.predict(dftest1)
+sqrt(mean_squared_error(predd,samp1))
+rfr=RandomForestRegressor()
+rfr.fit(dftr,y1)
+predr=rfr.predict(dftest1)
+sqrt(mean_squared_error(predr,samp1))
+data_to_submit = pd.DataFrame({
+    'Id':dftest['Id'],
+    'SalePrice':predr
+})
+data_to_submit.to_csv('csv_to_submit.csv', index = False)
